@@ -1,0 +1,32 @@
+{
+    "manifest_version": 2,
+    "name": "Job Description Summarizer",
+    "version": "1.0",
+
+    "description": "Browser Extension component of the Job Description Summarizer project.",
+    "icons": {
+        "48": "icon/icon.svg",
+        "96": "icon/icon.svg"
+    },
+
+    "permissions": [
+        "activeTab"
+    ],
+
+    "browser_action": {
+        "default_icon": "icon/icon.svg",
+        "default_title": "Job Summarizer Settings",
+        "default_popup": "extensionConfig/extensionConfig.html"
+    },
+
+    "content_scripts": [
+        {
+            "match": [
+                "*://*.indeed.com/*",
+                "*://*.linkedin.com/*"
+            ],
+            "js": "main.js"
+        }
+    ]
+     
+}

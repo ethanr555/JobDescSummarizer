@@ -1,0 +1,14 @@
+{
+  "name": "browserextension",
+  "version": "1.0.0",
+  "description": "Browser Extension component of the Job Description Summarizer project.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ethan Randolph",
+  "license": "ISC",
+  "dependencies": {
+    "typescript": "^5.8.3"
+  }
+}
