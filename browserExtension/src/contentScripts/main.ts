@@ -24,16 +24,16 @@ export function createButton(element: HTMLElement): button | null {
     return null; 
 }
 
-export function determineDOMLocation(): HTMLElement | null {
+export function determineDOMLocation(urlMap: Record<string, string>): HTMLElement | null {
    let currentHost: string = window.location.hostname;
    //If a valid website (ensure hostToID and Manifest.json are synced in what is supported)
-   if (currentHost in hostToID) {
+   if (currentHost in urlMap) {
         //Element does not exist, null returned.
-        if (document.getElementById(hostToID[currentHost]) == null || document.getElementById(hostToID[currentHost]) == undefined) {
+        if (document.getElementById(urlMap[currentHost]) == null || document.getElementById(urlMap[currentHost]) == undefined) {
             return null;
         }
         //Element exists, different returns if parent exists
-        let parent: HTMLElement | null | undefined = document.getElementById(hostToID[currentHost])?.parentElement;
+        let parent: HTMLElement | null | undefined = document.getElementById(urlMap[currentHost])?.parentElement;
         if (parent != undefined && parent != null) {
             return parent;
         } else {
@@ -46,7 +46,7 @@ export function determineDOMLocation(): HTMLElement | null {
 
 //Do I need to test this part?
 var b: button | null;
-let el = determineDOMLocation();
+let el = determineDOMLocation(hostToID);
 if (el != null) {
     b = createButton(el);
 }
