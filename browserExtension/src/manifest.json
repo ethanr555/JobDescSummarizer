@@ -27,6 +27,10 @@
             ],
             "js": "main.js"
         }
+    ],
+
+    "web_accessible_resources": [
+        "icon/icon.svg"
     ]
      
 }
