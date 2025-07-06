@@ -1,7 +1,10 @@
-var hostToID: Record<string, string> = {
+const hostToID: Record<string, string> = {
     "www.indeed.com": "jobDescriptionText",
     "www.linkedIn.com": "job-details"
 }
+
+const iconLink: string = "../icon/icon.svg"
+const iconLinkFallBack: string = "../icon/icon_48.png"
 
 export type button = {
     // Store information and state about button here.
@@ -14,7 +17,14 @@ export function createButton(element: HTMLElement): button | null {
 
     let newButtonElement: HTMLElement | null = null;
     if (element != null && element != undefined) {
+
+        // Button Creation
         newButtonElement = document.createElement("div");
+        let newButtonClickElement = document.createElement("img");
+        newButtonClickElement.src = iconLink;
+        newButtonClickElement.addEventListener("error", (event: ErrorEvent) => {
+            newButtonClickElement.src = iconLinkFallBack;
+        })
         element.appendChild(newButtonElement);
         return {
             domElement: newButtonElement as HTMLElement,
