@@ -1,5 +1,5 @@
 import {  describe, expect, test} from '@jest/globals';
-import { determineDOMLocation } from '../../src/contentScripts/main';
+import { determineDOMLocation } from './main';
 
 //Mock window and document?
 
@@ -17,15 +17,15 @@ describe("determineDOMLocation Cases", () => {
     })
 
     test('if button is attached to root if there is no parent element', () => {
-        let ogLocation = JSON.parse(JSON.stringify(window.location));
-        let mockLocation = JSON.parse(JSON.stringify(ogLocation));
+        const ogLocation = JSON.parse(JSON.stringify(window.location));
+        const mockLocation = JSON.parse(JSON.stringify(ogLocation));
         mockLocation.hostname = "www.indeed.com";
         Object.defineProperty(window, 'location', {
             configurable: true,
             writable: true,
             value: mockLocation
         });
-        let mockEl: HTMLElement = document.createElement("div");
+        const mockEl: HTMLElement = document.createElement("div");
         mockEl.id = "jobDescriptionText";
         document.body.appendChild(mockEl);
         // Result should not be null, meaning a successful attachment
@@ -39,8 +39,8 @@ describe("determineDOMLocation Cases", () => {
     })
 
     test('if link is valid but element is not present, null', () => {
-        let ogLocation = JSON.parse(JSON.stringify(window.location));
-        let mockLocation = JSON.parse(JSON.stringify(ogLocation));
+        const ogLocation = JSON.parse(JSON.stringify(window.location));
+        const mockLocation = JSON.parse(JSON.stringify(ogLocation));
         mockLocation.hostname = "www.indeed.com";
         console.log(ogLocation);
         Object.defineProperty(window, 'location', {

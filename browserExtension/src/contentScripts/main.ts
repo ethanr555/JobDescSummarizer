@@ -4,7 +4,7 @@ const hostToID: Record<string, string> = {
 }
 
 const iconLink: string = "../icon/icon.svg"
-const iconLinkFallBack: string = "../icon/icon_48.png"
+//const iconLinkFallBack: string = "../icon/icon_48.png"
 
 export type button = {
     // Store information and state about button here.
@@ -20,11 +20,11 @@ export function createButton(element: HTMLElement): button | null {
 
         // Button Creation
         newButtonElement = document.createElement("div");
-        let newButtonClickElement = document.createElement("img");
+        const newButtonClickElement = document.createElement("img");
         newButtonClickElement.src = iconLink;
-        newButtonClickElement.addEventListener("error", (event: ErrorEvent) => {
-            newButtonClickElement.src = iconLinkFallBack;
-        })
+//        newButtonClickElement.addEventListener("error", (event: ErrorEvent) => {
+//            newButtonClickElement.src = iconLinkFallBack;
+//        })
         element.appendChild(newButtonElement);
         return {
             domElement: newButtonElement as HTMLElement,
@@ -33,9 +33,9 @@ export function createButton(element: HTMLElement): button | null {
     }
     return null; 
 }
-
+// Hello
 export function determineDOMLocation(urlMap: Record<string, string>): HTMLElement | null {
-   let currentHost: string = window.location.hostname;
+   const currentHost: string = window.location.hostname;
    //If a valid website (ensure hostToID and Manifest.json are synced in what is supported)
    if (currentHost in urlMap) {
         //Element does not exist, null returned.
@@ -43,7 +43,7 @@ export function determineDOMLocation(urlMap: Record<string, string>): HTMLElemen
             return null;
         }
         //Element exists, different returns if parent exists
-        let parent: HTMLElement | null | undefined = document.getElementById(urlMap[currentHost])?.parentElement;
+        const parent: HTMLElement | null | undefined = document.getElementById(urlMap[currentHost])?.parentElement;
         if (parent != undefined && parent != null) {
             return parent;
         } else {
@@ -55,8 +55,8 @@ export function determineDOMLocation(urlMap: Record<string, string>): HTMLElemen
 }
 
 //Do I need to test this part?
-var b: button | null;
-let el = determineDOMLocation(hostToID);
+//let b: button | null;
+const el = determineDOMLocation(hostToID);
 if (el != null) {
-    b = createButton(el);
+    createButton(el);
 }
