@@ -1,62 +1,114 @@
-const hostToID: Record<string, string> = {
-    "www.indeed.com": "jobDescriptionText",
-    "www.linkedIn.com": "job-details"
-}
+import { getConfigLocal } from '../configDefinition';
 
-const iconLink: string = "../icon/icon.svg"
-//const iconLinkFallBack: string = "../icon/icon_48.png"
 
-export type button = {
-    // Store information and state about button here.
-    domElement: HTMLElement;
-    isToggled: boolean;
-}
 
 //Create a new button, and initialize it at the specific DOM location
-export function createButton(element: HTMLElement): button | null {
+export function createButton(parent: HTMLElement, id: string): void {
 
+    const iconLink: string = browser.runtime.getURL("icon/icon.svg");
+    const iconLinkFallBack: string = browser.runtime.getURL("icon/icon_48px.png");
     let newButtonElement: HTMLElement | null = null;
-    if (element != null && element != undefined) {
+    if (parent != null && parent != undefined) {
 
         // Button Creation
         newButtonElement = document.createElement("div");
+        newButtonElement.id = id;
         const newButtonClickElement = document.createElement("img");
         newButtonClickElement.src = iconLink;
-//        newButtonClickElement.addEventListener("error", (event: ErrorEvent) => {
-//            newButtonClickElement.src = iconLinkFallBack;
-//        })
-        element.appendChild(newButtonElement);
-        return {
-            domElement: newButtonElement as HTMLElement,
-            isToggled: false
-        }
+        newButtonClickElement.addEventListener("error", (event: ErrorEvent) => {
+            console.log(event.message);
+            console.log("Falling back to png.");
+            newButtonClickElement.src = iconLinkFallBack;
+        });
+        newButtonClickElement.addEventListener("click", () => {
+            console.log("CLICKED!");
+        })
+        newButtonElement.appendChild(newButtonClickElement);
+        parent.appendChild(newButtonElement);
     }
-    return null; 
-}
-// Hello
-export function determineDOMLocation(urlMap: Record<string, string>): HTMLElement | null {
-   const currentHost: string = window.location.hostname;
-   //If a valid website (ensure hostToID and Manifest.json are synced in what is supported)
-   if (currentHost in urlMap) {
-        //Element does not exist, null returned.
-        if (document.getElementById(urlMap[currentHost]) == null || document.getElementById(urlMap[currentHost]) == undefined) {
-            return null;
-        }
-        //Element exists, different returns if parent exists
-        const parent: HTMLElement | null | undefined = document.getElementById(urlMap[currentHost])?.parentElement;
-        if (parent != undefined && parent != null) {
-            return parent;
-        } else {
-            return document.body;
-        }
-   } else {
-        return null;
-   } 
 }
 
-//Do I need to test this part?
-//let b: button | null;
-const el = determineDOMLocation(hostToID);
-if (el != null) {
-    createButton(el);
+export type buttonInjection = {
+    SetSummary: () => void,
+    ToggleButton: () => void,
+    GetButton: () => void
 }
+
+export function IndeedInit(): buttonInjection {
+    const elementsToCheck: string[] = [
+        "jobsearch-JapanPage",
+        "jobsearch-Main",
+        "viewJobSSRRoot"
+    ]
+    
+    const buttonID: string = "jobDescSummarizer_Button";
+
+    let ob = new MutationObserver(() => {
+        let parent: HTMLElement | null = document.getElementById("jobsearch-ViewJobButtons-container");
+        if (parent != null) {
+            if (parent.children.namedItem(buttonID) == null) {
+                createButton(parent, buttonID);
+            }
+        }    
+    });
+
+    for (const element of elementsToCheck) {
+        let next: HTMLElement | null = document.getElementById(element);
+        if (next != null) {
+            ob.observe(next, {
+                attributes: false,
+                childList: true,
+                characterData: false,
+                subtree: true
+            })
+            break;
+        }
+    }
+    return {
+        SetSummary: () => {},
+        ToggleButton: () => {},
+        GetButton: () => {}
+    }
+}
+
+export function LinkedInInit(): buttonInjection {
+    return {
+        SetSummary: () => {},
+        ToggleButton: () => {},
+        GetButton: () => {}
+    }
+}
+
+export function GetWindowURL(): string {
+    return window.location.hostname;
+}
+
+export function GetHost(hostname: string): string {
+    let buildString: string = "";
+    let periodCounter: number = 0;
+    for (let i = hostname.length; i >= 0; i--) {
+        if (hostname.charAt(i) === '.') {
+            periodCounter++;
+            if (periodCounter >= 2) {
+                return buildString;
+            }
+        }
+        buildString = hostname.charAt(i) + buildString; 
+    }
+    return buildString;
+}
+
+//Main execution starts here!
+
+const initButtonInjection: Record<string,() => buttonInjection> = {
+    "indeed.com": IndeedInit,
+    "linkedin.com": LinkedInInit
+} as const;
+
+
+const host: string = GetHost(GetWindowURL());
+if (host in initButtonInjection) {
+    initButtonInjection[host]();   
+}
+
+console.log(getConfigLocal());

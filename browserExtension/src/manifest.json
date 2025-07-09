@@ -21,16 +21,21 @@
 
     "content_scripts": [
         {
-            "match": [
+            "matches": [
                 "*://*.indeed.com/*",
                 "*://*.linkedin.com/*"
             ],
-            "js": "main.js"
+            "js": [
+                "contentScripts/main.js"
+            ]
         }
     ],
 
     "web_accessible_resources": [
-        "icon/icon.svg"
+        "icon/icon.svg",
+        "icon/icon_48px/png",
+        "icon/icon_96px/png"
     ]
+
      
 }
