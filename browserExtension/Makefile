@@ -10,8 +10,11 @@ build:
 typescript: 
 	npx tsc
 
-build/contentScripts/main.js: src/contentScripts/main.ts src/configDefinition.ts
+build/contentScripts/main.js: src/contentScripts/main.ts src/configDefinition.ts  src/trieData/trieData.ts src/compiledData.ts
 	npx esbuild $< --bundle --outfile=$@ --minify
+
+src/compiledData.ts:  src/trieData/trieMain.ts src/trieData/trieData.ts
+	npx esbuild --platform=node $< --bundle --minify | node - compiledData src/compiledData.ts
 
 build/manifest.json : src/manifest.json
 	mkdir -p build
@@ -23,9 +26,11 @@ test:
 lint:
 	npx eslint ./src
 
+#Removes: build director, cached build info from tsc, generated TS from trieData script
 clean:
-	rm -rf ./build
+	rm -rf ./build 
 	rm -f -- .tsbuildinfo
+	rm -f -- ./src/compiledData.ts
 
 build/icon/icon.svg : src/icon/icon.svg
 	mkdir -p build/icon

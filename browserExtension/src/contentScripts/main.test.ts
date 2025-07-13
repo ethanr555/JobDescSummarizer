@@ -1,10 +1,12 @@
 import {  describe, expect, test} from '@jest/globals';
-import { determineDOMLocation } from './main';
+import { GetHost, IndeedInit  } from './main';
 
 //Mock window and document?
 
 describe("determineDOMLocation Cases", () => {
 
+
+    
 
     function mockMap(): Record<string, string> {
         return {

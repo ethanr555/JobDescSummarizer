@@ -1,6 +1,12 @@
 import { getConfigLocal } from '../configDefinition';
+import { GetValueInTrie, TrieNode } from '../trieData/trieData';
+import { compiledData } from '../compiledData';
 
-
+export type buttonInjection = {
+    SetSummary: () => void,
+    ToggleButton: () => void,
+    GetButton: () => void
+}
 
 //Create a new button, and initialize it at the specific DOM location
 export function createButton(parent: HTMLElement, id: string): void {
@@ -28,11 +34,6 @@ export function createButton(parent: HTMLElement, id: string): void {
     }
 }
 
-export type buttonInjection = {
-    SetSummary: () => void,
-    ToggleButton: () => void,
-    GetButton: () => void
-}
 
 export function IndeedInit(): buttonInjection {
     const elementsToCheck: string[] = [
@@ -100,14 +101,17 @@ export function GetHost(hostname: string): string {
 
 //Main execution starts here!
 
+const data: TrieNode = compiledData;
+
 const initButtonInjection: Record<string,() => buttonInjection> = {
     "indeed.com": IndeedInit,
     "linkedin.com": LinkedInInit
 } as const;
 
 
-const host: string = GetHost(GetWindowURL());
-if (host in initButtonInjection) {
+const host: string | null = GetValueInTrie(GetWindowURL(), data);
+console.log(host);
+if (host !== null && host in initButtonInjection) {
     initButtonInjection[host]();   
 }
 
