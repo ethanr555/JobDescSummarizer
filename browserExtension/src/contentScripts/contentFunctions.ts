@@ -1,7 +1,3 @@
-import { getConfigLocal } from '../configDefinition';
-import { GetValueInTrie, TrieNode } from '../trieData/trieData';
-import { compiledData } from '../compiledData';
-
 export type buttonInjection = {
     SetSummary: () => void,
     ToggleButton: () => void,
@@ -9,10 +5,10 @@ export type buttonInjection = {
 }
 
 //Create a new button, and initialize it at the specific DOM location
-export function createButton(parent: HTMLElement, id: string): void {
+export function createButton(parent: HTMLElement, id: string, getURL: (input: string) => string): void {
 
-    const iconLink: string = browser.runtime.getURL("icon/icon.svg");
-    const iconLinkFallBack: string = browser.runtime.getURL("icon/icon_48px.png");
+    const iconLink: string = getURL("icon/icon.svg");
+    const iconLinkFallBack: string = getURL("icon/icon_48px.png");
     let newButtonElement: HTMLElement | null = null;
     if (parent != null && parent != undefined) {
 
@@ -34,8 +30,7 @@ export function createButton(parent: HTMLElement, id: string): void {
     }
 }
 
-
-export function IndeedInit(): buttonInjection {
+export function IndeedInit(getURL: (input: string) => string): buttonInjection {
     const elementsToCheck: string[] = [
         "jobsearch-JapanPage",
         "jobsearch-Main",
@@ -48,7 +43,7 @@ export function IndeedInit(): buttonInjection {
         let parent: HTMLElement | null = document.getElementById("jobsearch-ViewJobButtons-container");
         if (parent != null) {
             if (parent.children.namedItem(buttonID) == null) {
-                createButton(parent, buttonID);
+                createButton(parent, buttonID, getURL);
             }
         }    
     });
@@ -79,40 +74,3 @@ export function LinkedInInit(): buttonInjection {
         GetButton: () => {}
     }
 }
-
-export function GetWindowURL(): string {
-    return window.location.hostname;
-}
-
-export function GetHost(hostname: string): string {
-    let buildString: string = "";
-    let periodCounter: number = 0;
-    for (let i = hostname.length; i >= 0; i--) {
-        if (hostname.charAt(i) === '.') {
-            periodCounter++;
-            if (periodCounter >= 2) {
-                return buildString;
-            }
-        }
-        buildString = hostname.charAt(i) + buildString; 
-    }
-    return buildString;
-}
-
-//Main execution starts here!
-
-const data: TrieNode = compiledData;
-
-const initButtonInjection: Record<string,() => buttonInjection> = {
-    "indeed.com": IndeedInit,
-    "linkedin.com": LinkedInInit
-} as const;
-
-
-const host: string | null = GetValueInTrie(GetWindowURL(), data);
-console.log(host);
-if (host !== null && host in initButtonInjection) {
-    initButtonInjection[host]();   
-}
-
-console.log(getConfigLocal());

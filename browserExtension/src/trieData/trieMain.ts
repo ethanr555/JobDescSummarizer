@@ -16,13 +16,6 @@ export function outputTS(inputTrie: TrieNode, varName: string, filePath: string)
     });
 }
 
-const outputVarName: string = "compiledData";
-const outputFilePath: string = "compiledData.ts";
-
-export function outputTSDefault(inputTrie: TrieNode): void {
-    outputTS(inputTrie, outputVarName, outputFilePath);
-}
-
 const website: string[] = [
     "indeed.com",
     "linkedin.com"

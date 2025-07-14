@@ -5,12 +5,12 @@ iconExports := $(foreach size,$(iconExportSizes),build/icon/icon_$(size)px.png)
 
 # Incremental option is enabled, meaning that the Typescript compiler will only rebuild modified files.
 build: 
-	$(MAKE) -j --output-sync build/manifest.json build/contentScripts/main.js $(iconExports) 
+	$(MAKE) -j --output-sync build/manifest.json build/contentScripts/content.js $(iconExports) 
 
 typescript: 
 	npx tsc
 
-build/contentScripts/main.js: src/contentScripts/main.ts src/configDefinition.ts  src/trieData/trieData.ts src/compiledData.ts
+build/contentScripts/content.js: src/contentScripts/contentMain.ts src/configDefinition.ts src/contentScripts/contentFunctions.ts src/trieData/trieData.ts src/compiledData.ts
 	npx esbuild $< --bundle --outfile=$@ --minify
 
 src/compiledData.ts:  src/trieData/trieMain.ts src/trieData/trieData.ts

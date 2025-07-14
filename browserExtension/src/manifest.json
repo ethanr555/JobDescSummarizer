@@ -27,7 +27,7 @@
                 "*://*.linkedin.com/*"
             ],
             "js": [
-                "contentScripts/main.js"
+                "contentScripts/content.js"
             ]
         }
     ],
