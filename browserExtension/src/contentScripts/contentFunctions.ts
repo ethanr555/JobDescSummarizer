@@ -5,7 +5,7 @@ export type buttonInjection = {
 }
 
 //Create a new button, and initialize it at the specific DOM location
-export function createButton(parent: HTMLElement, id: string, getURL: (input: string) => string): void {
+export function createButton(parent: HTMLElement, id: string, getURL: (input: string) => string, dom: Document): void {
 
     const iconLink: string = getURL("icon/icon.svg");
     const iconLinkFallBack: string = getURL("icon/icon_48px.png");
@@ -13,9 +13,9 @@ export function createButton(parent: HTMLElement, id: string, getURL: (input: st
     if (parent != null && parent != undefined) {
 
         // Button Creation
-        newButtonElement = document.createElement("div");
+        newButtonElement = dom.createElement("div");
         newButtonElement.id = id;
-        const newButtonClickElement = document.createElement("img");
+        const newButtonClickElement = dom.createElement("img");
         newButtonClickElement.src = iconLink;
         newButtonClickElement.addEventListener("error", (event: ErrorEvent) => {
             console.log(event.message);
@@ -30,7 +30,7 @@ export function createButton(parent: HTMLElement, id: string, getURL: (input: st
     }
 }
 
-export function IndeedInit(getURL: (input: string) => string): buttonInjection {
+export function IndeedInit(getURL: (input: string) => string, dom: Document): buttonInjection {
     const elementsToCheck: string[] = [
         "jobsearch-JapanPage",
         "jobsearch-Main",
@@ -39,24 +39,28 @@ export function IndeedInit(getURL: (input: string) => string): buttonInjection {
     
     const buttonID: string = "jobDescSummarizer_Button";
 
-    let ob = new MutationObserver(() => {
-        let parent: HTMLElement | null = document.getElementById("jobsearch-ViewJobButtons-container");
+    const buttonCreation: () => void = () => {
+        let parent: HTMLElement | null = dom.getElementById("jobsearch-ViewJobButtons-container");
         if (parent != null) {
             if (parent.children.namedItem(buttonID) == null) {
-                createButton(parent, buttonID, getURL);
+                createButton(parent, buttonID, getURL, dom);
             }
         }    
+    }
+    let ob = new MutationObserver(() => {
+        buttonCreation();
     });
 
     for (const element of elementsToCheck) {
-        let next: HTMLElement | null = document.getElementById(element);
-        if (next != null) {
+        let next: HTMLElement | null = dom.getElementById(element);
+        if (next !== null) {
             ob.observe(next, {
                 attributes: false,
                 childList: true,
                 characterData: false,
                 subtree: true
             })
+            buttonCreation();
             break;
         }
     }

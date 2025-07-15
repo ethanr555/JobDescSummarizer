@@ -7,7 +7,7 @@ const data: TrieNode = compiledData;
 
 const initButtonInjection: Record<string,() => buttonInjection> = {
     "indeed.com": () => {
-        return IndeedInit(browser.runtime.getURL)
+        return IndeedInit(browser.runtime.getURL, document)
     },
     "linkedin.com": LinkedInInit
 } as const;
