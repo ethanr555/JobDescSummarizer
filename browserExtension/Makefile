@@ -42,7 +42,7 @@ configfiles = build/extensionConfig/config.html build/extensionConfig/config.css
 config:
 	$(MAKE) -j --output-sync $(configfiles) build/extensionConfig/config.js
 
-build/extensionConfig/config.js: src/extensionConfig/config.ts
+build/extensionConfig/config.js: src/extensionConfig/configMain.ts src/extensionConfig/configFunctions.ts src/configDefinition.ts
 	mkdir -p build/extensionConfig
 	npx esbuild $< --bundle --outfile=$@ --minify
 
