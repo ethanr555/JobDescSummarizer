@@ -1,4 +1,4 @@
-import { configStoreProps, getConfigProperty, setConfigProperty } from "../configDefinition"
+import { configStoreProps, getConfigProperty, setConfigProperty } from "../configDefinition.ts"
 
 //Type alias that is used for GetElements to ensure that HTML elementID and configType are paired.
 export type getElementsStruct = {
@@ -44,20 +44,11 @@ export function getValidElements(doc: Document, elementPairs: getElementsStruct[
     return elementStruct;
 }
 
-//Sets up input elements provided with lambda functions that update the stored value in the storagearea based on checked state.
-//Ensure the right properties are saved to the right config properties with the right configStoreProps pairings in setupElementStruct[]
-export function setupElements(elements: setupElementStruct[], store: browser.storage.StorageArea) {
-    for (let i of elements) {
-        setupElement(i, store);
-    }
-}
-//Sets up one element with lambda function that updates the stored value in the storagearea based on checked state of element.
-//Will default to checked if the element has never been saved to storage before.
-export async function setupElement(element: setupElementStruct, store: browser.storage.StorageArea) {
+// Sets an input element to have a checked status based on value, and a callback function assigned to the change event.
+export async function setupElement(element: HTMLInputElement, value: boolean, inputCallback: () => void) {
     
-    const value: boolean = await getConfigProperty(element.configType, store);
     if (value !== undefined) {
-        element.element.checked = value;
-        element.element.addEventListener('change', () => {setConfigProperty(element.configType, element.element.checked, store);});
+        element.checked = value;
+        element.addEventListener('change', inputCallback);
     }
 }

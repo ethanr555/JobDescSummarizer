@@ -1,10 +1,10 @@
 import {  describe, expect, test, jest, beforeAll, beforeEach, afterEach} from '@jest/globals';
-import { createButton, IndeedInit  } from './contentFunctions';
+import { createButton, IndeedInit  } from './contentFunctions.ts';
 
 
 describe("createButton Tests", () => {
 
-    const mockURLGet = (string) => {
+    const mockURLGet = (mock: string) => {
         return "";
     }
 
@@ -23,7 +23,7 @@ describe("indeedInit Tests", () => {
     const htmlFlagID: string = "jobsearch-JapanPage";
     const parentID: string = "jobsearch-ViewJobButtons-container";
     const buttonID: string = 'jobDescSummarizer_Button';
-    const mockURLGet = (string) => {
+    const mockURLGet = (mock: string) => {
         return "";
     }
    

@@ -1,4 +1,5 @@
-import { getValidElements, setupElements, getElementsStruct, setupElementStruct } from "./configFunctions";
+import { setConfigProperty, getConfigProperty } from "../configDefinition.ts";
+import { getValidElements, getElementsStruct, setupElementStruct, setupElement } from "./configFunctions.ts";
 
 const elementsToFind: getElementsStruct[] = [
     {
@@ -32,4 +33,8 @@ const elementsToFind: getElementsStruct[] = [
 ]
 
 const setupElementPairs: setupElementStruct[] = getValidElements(document, elementsToFind);
-setupElements(setupElementPairs, browser.storage.local);
+for (const i of setupElementPairs) {
+    getConfigProperty(i.configType, browser.storage.local).then((value: boolean) => {
+        setupElement(i.element, value, () => {setConfigProperty(i.configType, i.element.checked, browser.storage.local)});
+    });
+}

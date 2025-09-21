@@ -21,7 +21,7 @@ const storageKeyPrefix = "config_";
 export async function getConfigProperty(key: configStoreProps, store: browser.storage.StorageArea): Promise<boolean> {
     
     const configName: string = storageKeyPrefix + key;
-    let currValue: boolean = await store.get(configName)
+    const currValue: boolean = await store.get(configName)
         .then( (value: browser.storage.StorageObject) => {
             if (value[configName] !== undefined) {
                 return value[configName] as boolean;

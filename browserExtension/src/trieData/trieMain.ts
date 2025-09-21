@@ -1,4 +1,4 @@
-import { TrieNode, ParseTrieNode } from "./trieData";
+import { TrieNode, ParseTrieNode } from "./trieData.ts";
 import { argv } from "node:process";
 import { writeFile } from "node:fs";
 
@@ -6,7 +6,7 @@ export function outputTS(inputTrie: TrieNode, varName: string, filePath: string)
     
     //Create file string
     const fileContent: string = 
-        "import { TrieNode } from 'trieData/trieData'; \nexport const " +
+        "import { TrieNode } from './trieData/trieData.ts'; \nexport const " +
         varName + ": TrieNode = " + JSON.stringify(inputTrie) + ";";
     
     writeFile(filePath, fileContent, err => {
