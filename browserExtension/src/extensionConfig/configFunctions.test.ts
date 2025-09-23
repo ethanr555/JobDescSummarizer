@@ -153,7 +153,7 @@ describe("setupElement tests", () => {
         document.body.appendChild(mockElement2);
         const mockFunction = jest.fn(() => {});
 
-        setupElement(mockElement2, false, mockFunction).then( () => {
+        return setupElement(mockElement2, false, mockFunction).then( () => {
             const mockEvent: Event = new Event('change');
             mockElement2.dispatchEvent(mockEvent);
 
@@ -168,7 +168,7 @@ describe("setupElement tests", () => {
         const mockElement2: HTMLInputElement = mockElement1 as HTMLInputElement;
         document.body.appendChild(mockElement2);
 
-        setupElement(mockElement2, arg, () => {}).then(() => {
+        return setupElement(mockElement2, arg, () => {}).then(() => {
             expect(mockElement2.checked).toBe(arg);            
         })
     })
