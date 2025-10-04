@@ -40,19 +40,19 @@ export function IndeedInit(getURL: (input: string) => string, dom: Document): bu
     const buttonID: string = "jobDescSummarizer_Button";
 
     const buttonCreation: () => void = () => {
-        let parent: HTMLElement | null = dom.getElementById("jobsearch-ViewJobButtons-container");
+        const parent: HTMLElement | null = dom.getElementById("jobsearch-ViewJobButtons-container");
         if (parent != null) {
             if (parent.children.namedItem(buttonID) == null) {
                 createButton(parent, buttonID, getURL, dom);
             }
         }    
     }
-    let ob = new MutationObserver(() => {
+    const ob = new MutationObserver(() => {
         buttonCreation();
     });
 
     for (const element of elementsToCheck) {
-        let next: HTMLElement | null = dom.getElementById(element);
+        const next: HTMLElement | null = dom.getElementById(element);
         if (next !== null) {
             ob.observe(next, {
                 attributes: false,

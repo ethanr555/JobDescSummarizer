@@ -1,5 +1,5 @@
 import { describe, test, expect } from "@jest/globals";
-import { GetValueInTrie, ParseTrieNode, TrieNode } from './trieData';
+import { ParseTrieNode, TrieNode } from './trieData.ts';
 
 // Tests to test the limits of ParseTrieNode()
 describe("ParseTrieNode tests ", () => {

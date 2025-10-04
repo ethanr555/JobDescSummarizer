@@ -1,4 +1,7 @@
-const configStorePropsStrs = [
+//The types of config options available. This is translated to a union type below.
+//Changing this will cause code with hardcoded references to arbitruary values to this to potentially break.
+//Which, can be useful if you want to spot all areas of code that need to be updated when an option is added/removed.
+const configStoreKeys = [ // eslint-disable-line @typescript-eslint/no-unused-vars
      "proLang",
      "framework",
      "tools",
@@ -8,81 +11,37 @@ const configStorePropsStrs = [
      "conflict"
 ] as const;
 
-type configStoreProps = (typeof configStorePropsStrs)[number];
+export type configStoreProps = (typeof configStoreKeys)[number];
 
-export type configStore = Partial<Record<configStoreProps, boolean | undefined>>;
+// Storage keys for config variables are prefixed with this prefix, followed by the name of the variable in configStoreProps.
+// For example, [PREFIX]yrsOfExp
+const storageKeyPrefix = "config_";
 
-const defaultConfig: configStore = {
-    proLang: true,
-    framework: true,
-    tools: true,
-    logistical: true,
-    platforms: true,
-    yrsOfExp: true,
-    conflict: true
-}
-
-const storageKey = "config";
-
-export function initConfig(store: browser.storage.StorageArea ): void {
-    store.set({
-        [storageKey]: JSON.stringify(defaultConfig)
-    });
-}
-
-export function getConfig(store: browser.storage.StorageArea): configStore | null {
-
-    const errReturn = (): configStore | null => {
-        console.log("Failed to get config or not config exists");
-        return null;
-    }
-
-    store.get(storageKey)
+//Get's a config property of the specific key. Returns a default value of true if the value does not exist.
+export async function getConfigProperty(key: configStoreProps, store: browser.storage.StorageArea): Promise<boolean> {
+    
+    const configName: string = storageKeyPrefix + key;
+    const currValue: boolean = await store.get(configName)
         .then( (value: browser.storage.StorageObject) => {
-            try {
-                const jsnStr: string = value[storageKey] as string;
-                const obj: configStore = JSON.parse(jsnStr) as configStore;
-                return obj;
-            } catch {
-                return errReturn();
-            }
-        }).catch( () => {
-            return errReturn();
+            if (value[configName] !== undefined) {
+                return value[configName] as boolean;
+            } else
+                return true;
         })
-    return errReturn();
+        .catch( () => {
+            console.error('Managed store does not exist!');
+            return true;
+        });
+    return currValue;
 }
 
-export function setConfigProperties(updatedProperties: configStore, store: browser.storage.StorageArea): void {
-    let configTest: configStore | null = getConfig(store);
+//Simply sets a config property value.
+export function setConfigProperty(updatedPropKey: configStoreProps, updatedPropValue: boolean, store: browser.storage.StorageArea): void {
 
-    if (configTest === null) {
-        //Does not exist, initialize default then apply set modifications.
-        initConfig(store);
-        configTest = getConfig(store);
-        if (configTest === null) {
-            //Something weird happened...
-        } 
-    }
-    const prevConfig: configStore = configTest as configStore;
-    let updatedConfig: configStore = structuredClone(prevConfig);
-    configStorePropsStrs.forEach((prop) => {
-        if (updatedProperties[prop] !== undefined) {
-            updatedConfig[prop] = updatedProperties[prop];
-        }
-    });
+    const configName: string = storageKeyPrefix + updatedPropKey; 
     store.set({
-        [storageKey]: updatedConfig
-    });
-}
-
-export function initConfigLocal(): void {
-    return initConfig(browser.storage.local);
-}
-
-export function getConfigLocal(): configStore | null {
-    return getConfig(browser.storage.local);
-}
-
-export function setConfigPropertiesLocal(updatedProperties: configStore): void {
-    return setConfigProperties(updatedProperties, browser.storage.local);
+        [configName]: updatedPropValue
+    }).then(() => {
+        console.log("Updated %s key-value pair to %s", configName, updatedPropValue);
+    })
 }
