@@ -14,7 +14,7 @@ test:
 	npx jest
 
 lint:
-	npx eslint ./src
+	npx eslint ./src --fix
 
 build/extensionConfig/config.css: src/extensionConfig/config.css
 	mkdir -p build/extensionConfig

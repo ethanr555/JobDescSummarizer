@@ -1,4 +1,4 @@
-import { configStoreProps, getConfigProperty, setConfigProperty } from "../configDefinition.ts"
+import { configStoreProps } from "../configDefinition.ts"
 
 //Type alias that is used for GetElements to ensure that HTML elementID and configType are paired.
 export type getElementsStruct = {
@@ -29,7 +29,7 @@ export function getElement(id: string, prop: configStoreProps, doc: Document): s
 //Utilized logic from getElement function, but also does a nullcheck, and adds valid entries to a returned array.
 //Reads from elementPairs, since configType is needed to assure that said elements found can be properly assigned with setupElements().
 export function getValidElements(doc: Document, elementPairs: getElementsStruct[]): setupElementStruct[] {
-    let elementStruct: setupElementStruct[] = [];
+    const elementStruct: setupElementStruct[] = [];
     const nullCheck = (result: setupElementStruct | null) => {
         if (result !== null) {
             elementStruct.push(result);
@@ -37,7 +37,7 @@ export function getValidElements(doc: Document, elementPairs: getElementsStruct[
     }
     const localGetElement = (id: string, prop: configStoreProps) => {nullCheck(getElement(id, prop, doc));};
 
-    for (let i of elementPairs) {
+    for (const i of elementPairs) {
         localGetElement(i.elementID, i.configType);
     }
 

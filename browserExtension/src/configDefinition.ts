@@ -1,7 +1,7 @@
 //The types of config options available. This is translated to a union type below.
 //Changing this will cause code with hardcoded references to arbitruary values to this to potentially break.
 //Which, can be useful if you want to spot all areas of code that need to be updated when an option is added/removed.
-const configStoreKeys = [
+const configStoreKeys = [ // eslint-disable-line @typescript-eslint/no-unused-vars
      "proLang",
      "framework",
      "tools",

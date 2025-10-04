@@ -95,8 +95,8 @@ describe("getValidElements tests", () => {
                 configType: 'framework'
             }];
         const result: setupElementStruct[] = getValidElements(document, testPair);
-        let resultElements: HTMLInputElement[] = []
-        for (let i of result) {
+        const resultElements: HTMLInputElement[] = []
+        for (const i of result) {
             resultElements.push(i.element);
         }
         expect(resultElements).toContain(document.getElementById('test1'));
@@ -118,7 +118,7 @@ describe("getValidElements tests", () => {
                 configType: 'framework'
             }];
         const result: setupElementStruct[] = getValidElements(document, testPair);
-        for (let i of result) {
+        for (const i of result) {
             switch (i.element.id) {
                 case "test1":
                     expect(i.configType).toBe('yrsOfExp');

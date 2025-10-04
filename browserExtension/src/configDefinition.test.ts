@@ -1,10 +1,10 @@
-import { beforeAll, describe, beforeEach, test, jest, afterAll, afterEach, expect } from "@jest/globals";
+import { describe, test, jest, expect } from "@jest/globals";
 import { configStoreProps, getConfigProperty, setConfigProperty } from "./configDefinition.ts";
 
 
 const testCases1: configStoreProps[] = ['yrsOfExp', 'tools', 'proLang', 'platforms', 'logistical', 'framework', 'conflict'];
-let testCases2: [configStoreProps, boolean][] = [];
-for (let i of testCases1) {
+const testCases2: [configStoreProps, boolean][] = [];
+for (const i of testCases1) {
     testCases2.push([i, true]);
     testCases2.push([i, false]);
 }
@@ -19,7 +19,7 @@ describe("getConfigProperty tests", () => {
                     return reject();
                 });
             });
-        const mockSet = jest.fn((keys: browser.storage.StorageObject) => {
+        const mockSet = jest.fn(() => {
             return new Promise<void>((resolve) => {resolve();});
         });
         const mockClear = jest.fn(() => { return new Promise<void>((resolve) => {resolve();});});
@@ -36,7 +36,7 @@ describe("getConfigProperty tests", () => {
     });
 
     test.each(testCases1)("getConfigProperty() does not attempt to set, clear, or remove values: %s", (args_0: configStoreProps) => {
-        const mockGet = jest.fn((keys?: string | string[] | null) => {
+        const mockGet = jest.fn(() => {
                 return new Promise<browser.storage.StorageObject>((resolve) => {resolve({});
             });
             });
@@ -59,7 +59,7 @@ describe("getConfigProperty tests", () => {
     });
 
     test.each(testCases1)("getConfigProperty() always returns true when there is a rejection: %s", (args_0: configStoreProps) => {
-        const mockGet = jest.fn((keys?: string | string[] | null) => {
+        const mockGet = jest.fn(() => {
                 return new Promise<browser.storage.StorageObject>((resolve, reject) => {
                     reject({});
                 });
@@ -82,7 +82,7 @@ describe("getConfigProperty tests", () => {
 
     test("getConfigProperty() return value is not boolean, it is repaired to true", () => {
         const configName: configStoreProps = 'yrsOfExp'
-        const mockGet = jest.fn((keys?: string | string[] | null) => {
+        const mockGet = jest.fn(() => {
             return new Promise<browser.storage.StorageObject>((resolve) => {
                 resolve({
                     [configName]: null
@@ -112,15 +112,15 @@ describe("setConfigProperty() tests", () => {
     //TEST TO-DO: Ensure every value combination is stored correctly.
     test.each(testCases2)("Ensure every value combination is stored correctly: %s %s", (args_0: configStoreProps, args_1: boolean) => {
         const mockValues: Map<string, browser.storage.StorageValue> = new Map<string, browser.storage.StorageValue>();
-        const mockGet = jest.fn((keys?: string | string[] | null) => {
-                return new Promise<browser.storage.StorageObject>((resolve, reject) => {
+        const mockGet = jest.fn(() => {
+                return new Promise<browser.storage.StorageObject>((resolve) => {
                     resolve({});
                 });
             });
         const mockSet = jest.fn((keys: browser.storage.StorageObject) => {
             return new Promise<void>((resolve) => {
                 const props = Object.entries(keys);
-                for (let i of props) {
+                for (const i of props) {
                     mockValues.set(i[0], i[1]);
                 }
                 resolve();

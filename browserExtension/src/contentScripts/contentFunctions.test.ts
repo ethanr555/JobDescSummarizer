@@ -1,10 +1,10 @@
-import {  describe, expect, test, jest, beforeAll, beforeEach, afterEach} from '@jest/globals';
+import {  describe, expect, test, beforeEach, afterEach} from '@jest/globals';
 import { createButton, IndeedInit  } from './contentFunctions.ts';
 
 
 describe("createButton Tests", () => {
 
-    const mockURLGet = (mock: string) => {
+    const mockURLGet = () => {
         return "";
     }
 
@@ -23,7 +23,7 @@ describe("indeedInit Tests", () => {
     const htmlFlagID: string = "jobsearch-JapanPage";
     const parentID: string = "jobsearch-ViewJobButtons-container";
     const buttonID: string = 'jobDescSummarizer_Button';
-    const mockURLGet = (mock: string) => {
+    const mockURLGet = () => {
         return "";
     }
    
@@ -54,11 +54,9 @@ describe("indeedInit Tests", () => {
     }
     test.each(rngRemoveCountArr)("element with same id remains after several removal attempts", async (amount: number) => {
         IndeedInit(mockURLGet, document);
-        let button: HTMLElement | null = document.getElementById(buttonID);
         let i = 0;
-        let loop: () => void;
-        loop = () => {setTimeout(() => {
-                let button = document.getElementById(buttonID);
+        const loop = () => {setTimeout(() => {
+                const button = document.getElementById(buttonID);
                 button?.remove();
                 i++;
                 if (i < amount) {
