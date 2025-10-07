@@ -1,0 +1,113 @@
+on:
+    push:
+        branches:
+            - dev
+env:
+    DOCKERNAME: jobdescsummarizer-ghactions-build-env
+    DOCKERARTIFACT: dockerbuildenv.tar
+    DOCKERTARNAME: buildenv.tar
+jobs:
+    builddocker:
+        name: Build Development Docker Image
+        runs-on: ubuntu-latest
+        outputs:
+            ARTIFACTIMAGEID: ${{ steps.upload-image.outputs.artifact-id }}
+        steps:
+            - name: Get Repo
+              uses: actions/checkout@v5
+            - name: Build Image
+              run: |
+                docker build -f .devcontainer/standalone.Dockerfile -t ${{ env.DOCKERNAME }} .
+            - name: Export Image
+              run: |
+                docker image save ${{ env.DOCKERNAME }} > ${{ env.DOCKERTARNAME }}
+            - name: Upload Image as Artifact
+              id: upload-image
+              uses: actions/upload-artifact@v4
+              with:
+                path: ${{ env.DOCKERTARNAME }}
+                name: ${{ env.DOCKERARTIFACT }}
+                retention-days: 1
+
+    lint:
+        name: Lint Browser Extension Code
+        runs-on: ubuntu-latest
+        needs: builddocker
+        steps:
+            - name: Get Repo
+              uses: actions/checkout@v5
+            - name: Get Build Environment
+              uses: actions/download-artifact@v5
+              with:
+                name: ${{ env.DOCKERARTIFACT }}
+            - name: Load Image
+              run: |
+                docker load < ${{ env.DOCKERTARNAME }}
+            - name: Run Docker in the background for further commands
+              id: docker-container-init
+              run: |
+                CONTAINERID=$(docker run -td ${{ env.DOCKERNAME }}) && echo "CONTAINERID=$CONTAINERID" >> "$GITHUB_OUTPUT"
+            - name: Copy files to Container
+              run: |
+                docker cp ./ ${{ steps.docker-container-init.outputs.CONTAINERID }}:/project
+            - name: Lint files
+              run: |
+                docker exec -w "/project/browserExtension" ${{ steps.docker-container-init.outputs.CONTAINERID }} /bin/bash -c "npm install && npx eslint ./src"
+
+    build:
+        name: Build Browser Extension
+        runs-on: ubuntu-latest
+        needs: lint
+        steps:
+            - name: Get Repo
+              uses: actions/checkout@v5
+            - name: Get Build Environment
+              uses: actions/download-artifact@v5
+              with:
+                name: ${{ env.DOCKERARTIFACT }}
+            - name: Load Image
+              run: |
+                docker load < ${{ env.DOCKERTARNAME }}
+            - name: Run Docker in the background for further commands
+              id: docker-container-init
+              run: |
+                CONTAINERID=$(docker run -td ${{ env.DOCKERNAME }}) && echo "CONTAINERID=$CONTAINERID" >> "$GITHUB_OUTPUT"
+            - name: Copy files to Container
+              run: |
+                docker cp ./ ${{ steps.docker-container-init.outputs.CONTAINERID }}:/project
+            - name: Build
+              run: |
+                docker exec -w "/project/browserExtension" ${{ steps.docker-container-init.outputs.CONTAINERID }} /bin/bash -c "npm install && make build"
+            - name: Copy files from Container
+              run: |
+                docker cp ${{ steps.docker-container-init.outputs.CONTAINERID }}:/project/browserExtension/build/ ./build
+            - name: Upload Build
+              uses: actions/upload-artifact@v4
+              with:
+                path: build/
+                name: BrowserExtension
+
+    test:
+        name: Test Browser Extension
+        runs-on: ubuntu-latest
+        needs: lint
+        steps:
+            - name: Get Repo
+              uses: actions/checkout@v5
+            - name: Get Build Environment
+              uses: actions/download-artifact@v5
+              with:
+                name: ${{ env.DOCKERARTIFACT }}
+            - name: Load Image
+              run: |
+                docker load < ${{ env.DOCKERTARNAME }}
+            - name: Run Docker in the background for further commands
+              id: docker-container-init
+              run: |
+                CONTAINERID=$(docker run -td ${{ env.DOCKERNAME }}) && echo "CONTAINERID=$CONTAINERID" >> "$GITHUB_OUTPUT"
+            - name: Copy files to Container
+              run: |
+                docker cp ./ ${{ steps.docker-container-init.outputs.CONTAINERID }}:/project
+            - name: Test
+              run: |
+                docker exec -w "/project/browserExtension" ${{ steps.docker-container-init.outputs.CONTAINERID }} /bin/bash -c "npm install && make test"
