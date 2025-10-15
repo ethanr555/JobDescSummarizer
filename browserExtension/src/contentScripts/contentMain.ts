@@ -1,6 +1,6 @@
-import { IndeedInit, LinkedInInit, buttonInjection } from "./contentFunctions";
-import { TrieNode, GetValueInTrie } from "../trieData/trieData";
-import { compiledData } from "../compiledData";
+import { IndeedInit, LinkedInInit, buttonInjection } from "./contentFunctions.ts";
+import { TrieNode, GetValueInTrie } from "../trieData/trieData.ts";
+import { compiledData } from "../generated/compiledData.generated.ts"; //Needs to be compiled before this file. Consult Makefile
 
 const data: TrieNode = compiledData;
 
