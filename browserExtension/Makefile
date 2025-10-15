@@ -1,7 +1,7 @@
 iconExportSizes = 32 48 96
 iconExports := $(foreach size,$(iconExportSizes),build/icon/icon_$(size)px.png)
 
-.PHONY: build test lint clean typescript run config
+.PHONY: build test lint clean typescript run config generated
 
 # Incremental option is enabled, meaning that the Typescript compiler will only rebuild modified files.
 build: 
@@ -23,17 +23,24 @@ build/extensionConfig/config.css: src/extensionConfig/config.css
 run:
 	cd ./build && npx web-ext run
 
-#Removes: build director, cached build info from tsc, generated TS from trieData script
+#Removes: build directory, cached build info from tsc, generated TS from trieData script
 clean:
 	rm -rf ./build 
 	rm -f -- .tsbuildinfo
-	rm -f -- ./src/compiledData.ts
+	rm -rf -- ./src/generated
+
+
+### Generated Files
+#Creates all generated files needed before final compile. Run this to remove potential IDE errors related to missing files.
+generated:
+	$(MAKE) -j --output-sync src/generated/compiledData.generated.ts
+
+src/generated/compiledData.generated.ts: src/trieData/trieMain.ts src/trieData/trieData.ts
+	mkdir -p src/generated
+	npx esbuild --platform=node $< --bundle --minify | node - compiledData src/generated/compiledData.generated.ts
 
 ### Content Script building recipes
-src/compiledData.ts:  src/trieData/trieMain.ts src/trieData/trieData.ts
-	npx esbuild --platform=node $< --bundle --minify | node - compiledData src/compiledData.ts
-
-build/contentScripts/content.js: src/contentScripts/contentMain.ts src/configDefinition.ts src/contentScripts/contentFunctions.ts src/trieData/trieData.ts src/compiledData.ts
+build/contentScripts/content.js: src/contentScripts/contentMain.ts src/configDefinition.ts src/contentScripts/contentFunctions.ts src/trieData/trieData.ts src/generated/compiledData.generated.ts
 	npx esbuild $< --bundle --outfile=$@ --minify
 
 

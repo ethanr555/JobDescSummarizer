@@ -141,5 +141,5 @@ vite.config.ts.timestamp-*
 # Build files
 build/
 
-#Generated TS file
-compiledData.ts
+#Generated TS files
+generated/
