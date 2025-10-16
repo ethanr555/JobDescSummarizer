@@ -17,6 +17,7 @@ export function createButton(parent: HTMLElement, id: string, getURL: (input: st
         newButtonElement.id = id;
         const newButtonClickElement = dom.createElement("img");
         newButtonClickElement.src = iconLink;
+        newButtonClickElement.style = "width: 44px; margin-left: 20px;"
         newButtonClickElement.addEventListener("error", (event: ErrorEvent) => {
             console.log(event.message);
             console.log("Falling back to png.");
