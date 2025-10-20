@@ -1,6 +1,8 @@
 ARG IN_IMAGE=ubuntu:22.04
 FROM ${IN_IMAGE}
 
+ARG USERUID=1001
+
 #Install docker onto image
 RUN apt install -y ca-certificates wget && \
     install -m 0755 -d /etc/apt/keyrings && \
@@ -17,6 +19,11 @@ RUN apt update && \
 RUN ACTTARFILE=/bin/act.tar.gz && wget -O $ACTTARFILE https://github.com/nektos/act/releases/download/v0.2.82/act_Linux_x86_64.tar.gz && \
     tar -xzf $ACTTARFILE -C /bin/ && \
     rm -f $ACTTARFILE /bin/README.md /bin/LICENSE
+
+
+RUN groupadd -g $USERUID container && \
+    useradd -g $USERUID -m container && \
+    usermod -aG docker container
 
 WORKDIR /project
 
