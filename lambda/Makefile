@@ -18,6 +18,7 @@ build/layer.zip : build/layer
 	cd build/layer && zip -r ../layer.zip python/
 
 build/layer: .requirements/base.txt .env
+	rm -rf build/layer
 	mkdir -p build/layer/python
 	$(PIP) install -r .requirements/base.txt --target build/layer/python
 
