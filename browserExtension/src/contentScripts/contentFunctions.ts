@@ -1,3 +1,8 @@
+export interface contentRequest {
+    categories: string[],
+    body: string
+}
+
 export type buttonInjection = {
     SetSummary: () => void,
     ToggleButton: () => void,
@@ -29,6 +34,19 @@ export function createButton(parent: HTMLElement, id: string, getURL: (input: st
         newButtonElement.appendChild(newButtonClickElement);
         parent.appendChild(newButtonElement);
     }
+}
+
+export function ComposeRequest(categories: string[], jobBody: string) {
+    return {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            categories: categories,
+            body: jobBody
+        })
+    };
 }
 
 export function IndeedInit(getURL: (input: string) => string, dom: Document): buttonInjection {
