@@ -5,7 +5,7 @@ PIP := .env/bin/pip
 .PHONY: build lint clean
 
 build:	
-	$(MAKE) build/lambda.py build/layer.zip
+	$(MAKE) -j --output-sync build/lambda.py build/layer.zip
 
 #To-Do
 lint:
