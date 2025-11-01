@@ -3,10 +3,26 @@ export interface contentRequest {
     body: string
 }
 
+export interface contentResponse {
+    summary: string
+}
+
 export type buttonInjection = {
     SetSummary: () => void,
     ToggleButton: () => void,
     GetButton: () => void
+}
+
+export async function HandleRequest(id: string, req: Request, url: URL, callback: (id: string, body: string) => void): Promise<string | null> {
+    const response: Response = await fetch(url, req);
+    if (response.ok) {
+        const result: contentResponse = await response.json() as contentResponse;
+        callback(id, result.summary);
+        return result.summary;
+    } else { 
+        console.error('Error getting response: HTTP status code #%d', response.status);
+        return null;
+    }
 }
 
 //Create a new button, and initialize it at the specific DOM location
