@@ -8,7 +8,7 @@ const tsJestTransformCfg = createDefaultPreset().transform;
 
 const config: Config = {
   preset: 'ts-jest',
-  testEnvironment: "jsdom",
+  testEnvironment: "./customjsdom.js",
   transform: {
     ...tsJestTransformCfg
   },

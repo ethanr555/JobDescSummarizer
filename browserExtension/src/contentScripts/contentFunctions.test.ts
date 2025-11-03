@@ -1,6 +1,5 @@
-import {  describe, expect, test, beforeEach, afterEach} from '@jest/globals';
-import { createButton, IndeedInit, ComposeRequest, contentRequest  } from './contentFunctions.ts';
-
+import {  describe, expect, test, beforeEach, afterEach, jest} from '@jest/globals';
+import { createButton, IndeedInit, ComposeRequest, contentRequest, handleRequest  } from './contentFunctions.ts';
 
 describe("createButton Tests", () => {
 
@@ -40,6 +39,96 @@ describe("ComposeRequest Tests", () => {
         expect(parsedBody.categories).toContain("test");
         expect(parsedBody.categories).toHaveLength(1);
         expect(parsedBody.body).toBe("test");
+    })
+});
+
+describe("handleRequest tests", () => {
+    const backupFetch = global.fetch;
+
+    beforeEach(() => {
+        //Reset fetch to be original fetch
+        global.fetch = backupFetch;
+    });
+
+    test("Return correct body", async () => {
+        global.fetch = () => { 
+            return new Promise<Response>((resolve) => {
+                resolve(new Response(JSON.stringify({
+                    summary: "test 123"
+                })));
+            }
+        )};
+
+        const result = await handleRequest("dummy", new Request(new URL("http://localhost:80")), new URL("http://localhost:80"), () => {});
+        expect(result).toBe("test 123");
+
+    });
+
+    test("Return null if non-ok response is returned", async () => {
+        global.fetch = () => { 
+            return new Promise<Response>((resolve) => {
+                const response: Response = new Response(JSON.stringify({
+                        summary: "test 123"
+                    }), {
+                        status: 404
+                    }); 
+                resolve(response);
+            }
+        )};
+        
+        const result = await handleRequest("dummy", new Request(new URL("http://localhost:80")), new URL("http://localhost:80"), () => {});
+        expect(result).toBeNull();
+    });
+
+    const bodyResponseCodes = Array.from({length: 100}, (_,i) =>  200 + i);
+    bodyResponseCodes.splice(4,2)
+    bodyResponseCodes.splice(1);
+    test.each(bodyResponseCodes)("Ensure callback is called on success (expect 201, 204, and 205)", async (statuscode: number) => {
+        global.fetch = () => { 
+            return new Promise<Response>((resolve) => {
+                const response: Response = new Response(JSON.stringify({
+                        summary: "test 123"
+                    }), {
+                        status: statuscode
+                    }); 
+                resolve(response);
+            }
+        )};
+
+        const mockCallback = jest.fn();
+        await handleRequest("dummy", new Request(new URL("http://localhost:80")), new URL("http://localhost:80"), mockCallback);
+        expect(mockCallback.mock.calls.length).toBeGreaterThanOrEqual(1);
+    });
+    test("Ensure callback is not called if body is null", async () => {
+        global.fetch = () => { 
+            return new Promise<Response>((resolve) => {
+                const response: Response = new Response(null, {
+                        status: 200
+                    }); 
+                resolve(response);
+            }
+        )};
+
+        const mockCallback = jest.fn();
+        await handleRequest("dummy", new Request(new URL("http://localhost:80")), new URL("http://localhost:80"), mockCallback);
+        expect(mockCallback.mock.calls.length).toBe(0);
+    });
+
+    test.each(Array.from({length: 200}, (_,i) =>  400 + i))("Ensure callaback is not called on error status code", async (statuscode: number) => {
+        global.fetch = () => { 
+            return new Promise<Response>((resolve) => {
+                const response: Response = new Response(JSON.stringify({
+                        summary: "test 123"
+                    }), {
+                        status: statuscode
+                    }); 
+                resolve(response);
+            }
+        )};
+       
+        const mockCallback = jest.fn();
+        await handleRequest("dummy", new Request(new URL("http://localhost:80")), new URL("http://localhost:80"), mockCallback);
+        expect(mockCallback.mock.calls.length).toBe(0);
     })
 })
 

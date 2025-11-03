@@ -13,12 +13,15 @@ export type buttonInjection = {
     GetButton: () => void
 }
 
-export async function HandleRequest(id: string, req: Request, url: URL, callback: (id: string, body: string) => void): Promise<string | null> {
+export async function handleRequest(id: string, req: Request, url: URL, callback: (id: string, body: string) => void): Promise<string | null> {
     const response: Response = await fetch(url, req);
     if (response.ok) {
-        const result: contentResponse = await response.json() as contentResponse;
-        callback(id, result.summary);
-        return result.summary;
+        if (response.body !== null) {
+            const result: contentResponse = await response.json() as contentResponse;
+            callback(id, result.summary);
+            return result.summary;
+        }
+        return null;
     } else { 
         console.error('Error getting response: HTTP status code #%d', response.status);
         return null;
