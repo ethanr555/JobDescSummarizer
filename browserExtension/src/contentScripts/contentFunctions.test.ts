@@ -29,7 +29,10 @@ describe("ComposeRequest Tests", () => {
     //JSON object should be sent that contains the categories and content of the job description read.
     test("Request content-type is application/json", () => {
         const result = ComposeRequest(["test"], "test");
-        expect(result.headers['Content-Type']).toBe("application/json");
+        expect(result.headers !== undefined).toBe(true);
+        const header = result.headers!
+        expect(header['Content-Type']).toBe("application/json");
+
     });
 
     //JSON object being sent needs to conform to interface contentRequest
@@ -129,7 +132,21 @@ describe("handleRequest tests", () => {
         const mockCallback = jest.fn();
         await handleRequest("dummy", new Request(new URL("http://localhost:80")), new URL("http://localhost:80"), mockCallback);
         expect(mockCallback.mock.calls.length).toBe(0);
-    })
+    });
+
+//    test("Ensure Request parameter is actually being used with fetch", () => {
+//        global.fetch = (input: RequestInfo | URL, init?: RequestInit) => { 
+//            return new Promise<Response>((resolve) => {
+//                const response: Response = new Response(JSON.stringify({
+//                        summary: "test 123"
+//                    }), {
+//                        status: statuscode
+//                    }); 
+//                resolve(response);
+//            }
+//        )};
+//
+//    })
 })
 
 describe("indeedInit Tests", () => {

@@ -13,7 +13,7 @@ export type buttonInjection = {
     GetButton: () => void
 }
 
-export async function handleRequest(id: string, req: Request, url: URL, callback: (id: string, body: string) => void): Promise<string | null> {
+export async function handleRequest(id: string, req: RequestInit, url: URL, callback: (id: string, body: string) => void): Promise<string | null> {
     const response: Response = await fetch(url, req);
     if (response.ok) {
         if (response.body !== null) {
@@ -55,7 +55,7 @@ export function createButton(parent: HTMLElement, id: string, getURL: (input: st
     }
 }
 
-export function ComposeRequest(categories: string[], jobBody: string) {
+export function ComposeRequest(categories: string[], jobBody: string): RequestInit {
     return {
         method: "POST",
         headers: {
@@ -66,6 +66,12 @@ export function ComposeRequest(categories: string[], jobBody: string) {
             body: jobBody
         })
     };
+}
+
+export function ComposeRequestHandler(categories: string[], jobBody: string) {
+    return (id: string, url: URL, callback: (id: string, body: string) => void ) => {
+        handleRequest(id, ComposeRequest(categories, jobBody), url, callback);
+    }
 }
 
 export function IndeedInit(getURL: (input: string) => string, dom: Document): buttonInjection {
