@@ -1,3 +1,9 @@
+
+NPX := npx
+NODE := node
+INKSCAPE := inkscape
+
+
 iconExportSizes = 32 48 96
 iconExports := $(foreach size,$(iconExportSizes),build/icon/icon_$(size)px.png)
 
@@ -8,20 +14,20 @@ build:
 	$(MAKE) -j --output-sync build/manifest.json build/contentScripts/content.js $(iconExports) config
 
 typescript: 
-	npx tsc
+	$(NPX) tsc
 
 test:
-	npx jest
+	$(NPX) jest
 
 lint:
-	npx eslint ./src --fix
+	$(NPX) eslint ./src --fix
 
 build/extensionConfig/config.css: src/extensionConfig/config.css
 	mkdir -p build/extensionConfig
 	cp $< $@
 
 run:
-	cd ./build && npx web-ext run
+	cd ./build && $(NPX) web-ext run
 
 #Removes: build directory, cached build info from tsc, generated TS from trieData script
 clean:
@@ -34,14 +40,13 @@ clean:
 #Creates all generated files needed before final compile. Run this to remove potential IDE errors related to missing files.
 generated:
 	$(MAKE) -j --output-sync src/generated/compiledData.generated.ts
-
 src/generated/compiledData.generated.ts: src/trieData/trieMain.ts src/trieData/trieData.ts
 	mkdir -p src/generated
-	npx esbuild --platform=node $< --bundle --minify | node - compiledData src/generated/compiledData.generated.ts
+	$(NPX) esbuild --platform=node $< --bundle --minify | $(NODE) - compiledData src/generated/compiledData.generated.ts
 
 ### Content Script building recipes
 build/contentScripts/content.js: src/contentScripts/contentMain.ts src/configDefinition.ts src/contentScripts/contentFunctions.ts src/trieData/trieData.ts src/generated/compiledData.generated.ts
-	npx esbuild $< --bundle --outfile=$@ --minify
+	$(NPX) esbuild $< --bundle --outfile=$@ --minify
 
 
 ### All config build recipes
@@ -51,7 +56,7 @@ config:
 
 build/extensionConfig/config.js: src/extensionConfig/configMain.ts src/extensionConfig/configFunctions.ts src/configDefinition.ts
 	mkdir -p build/extensionConfig
-	npx esbuild $< --bundle --outfile=$@ --minify
+	$(NPX) esbuild $< --bundle --outfile=$@ --minify
 
 $(configfiles):build/extensionConfig/config.%:src/extensionConfig/config.%
 	mkdir -p build/extensionConfig
@@ -68,5 +73,5 @@ build/icon/icon.svg : src/icon/icon.svg
 	cp src/icon/icon.svg build/icon/
 
 build/icon/icon_%px.png : build/icon/icon.svg
-	inkscape --export-type=png --export-filename=$@ -w $* -h $* $^
+	$(INKSCAPE) --export-type=png --export-filename=$@ -w $* -h $* $^
 
