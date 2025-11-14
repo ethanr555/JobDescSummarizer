@@ -1,6 +1,7 @@
 
 SHELL := /bin/bash
 PIP := .env/bin/pip
+PYTHON := python3
 
 .PHONY: build lint clean
 
@@ -24,7 +25,7 @@ build/layer: .requirements/base.txt .env
 
 .env: .requirements/base.txt .requirements/dev.txt .requirements/env.txt
 	rm -rf .env/
-	python3 -m venv .env/
+	$(PYTHON3) -m venv .env/
 	$(PIP) install -r .requirements/env.txt
 
 clean:
