@@ -1,26 +1,29 @@
 
 NPX := npx
 NODE := node
-INKSCAPE := inkscape
+MAGICK := magick
+NPM := npm
 
 
 iconExportSizes = 32 48 96
 iconExports := $(foreach size,$(iconExportSizes),build/icon/icon_$(size)px.png)
 
-.PHONY: build test lint clean typescript run config generated
+.PHONY: build test lint clean run config generated npm lint-nofix
 
 # Incremental option is enabled, meaning that the Typescript compiler will only rebuild modified files.
 build: 
 	$(MAKE) -j --output-sync build/manifest.json build/contentScripts/content.js $(iconExports) config
-
-typescript: 
-	$(NPX) tsc
+npm:
+	$(NPM) ci
 
 test:
 	$(NPX) jest
 
 lint:
 	$(NPX) eslint ./src --fix
+
+lint-nofix:
+	$(NPX) eslint ./src
 
 build/extensionConfig/config.css: src/extensionConfig/config.css
 	mkdir -p build/extensionConfig
@@ -73,5 +76,5 @@ build/icon/icon.svg : src/icon/icon.svg
 	cp src/icon/icon.svg build/icon/
 
 build/icon/icon_%px.png : build/icon/icon.svg
-	$(INKSCAPE) --export-type=png --export-filename=$@ -w $* -h $* $^
+	$(MAGICK) $^ -resize $*x$* $@
 
