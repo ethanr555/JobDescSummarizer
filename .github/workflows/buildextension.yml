@@ -10,7 +10,7 @@ jobs:
             - name: Get Repo
               uses: actions/checkout@v6
               with:
-                spare-checkout: browserExtension
+                sparse-checkout: browserExtension
             - name: Lint files
               run: |
                 cd browserExtension
@@ -34,7 +34,7 @@ jobs:
             - name: Get Repo
               uses: actions/checkout@v6
               with:
-                spare-checkout: browserExtension
+                sparse-checkout: browserExtension
             - name: Build
               run: |
                 cd browserExtension
@@ -50,7 +50,6 @@ jobs:
                   NODE="docker run -v .:/work:z -w /work -i node:22.21.1-bookworm node" \
                   NPM="docker run -v .:/work:z -w /work node:22.21.1-bookworm npm" \
                   build
-                ls -Rl
             - name: Upload Build
               uses: actions/upload-artifact@v4
               with:
@@ -65,7 +64,7 @@ jobs:
             - name: Get Repo
               uses: actions/checkout@v6
               with:
-                spare-checkout: browserExtension
+                sparse-checkout: browserExtension
             - name: Test
               run: |
                 cd browserExtension
